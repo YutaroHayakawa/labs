@@ -8,7 +8,7 @@ set -e
 function deploy() {
 	echo ::: Create Kind cluster and ContinerLab topology
 	kind create cluster --config cluster.yaml
-	sudo containerlab -t topo.yaml deploy
+	sudo -E containerlab -t topo.yaml deploy
 
 	echo ::: Install Cilium
 	cilium install \
@@ -25,7 +25,7 @@ function deploy() {
 }
 
 function destroy() {
-	sudo containerlab -t topo.yaml destroy
+	sudo -E containerlab -t topo.yaml destroy
 	kind delete clusters cilium-bgpv2-sidecar
 }
 
