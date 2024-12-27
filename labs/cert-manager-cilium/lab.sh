@@ -3,6 +3,8 @@
 #! nix-shell -p bash kind cilium-cli kubectl kubernetes-helm
 #! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/2ea61d0eb4f829f8e2e905f0be681a5138d519c9.tar.gz
 
+set -e
+
 function deploy() {
 	echo ::: Create Kind cluster and install Cilium
 	kind create cluster --config cluster.yaml
