@@ -9,8 +9,28 @@ on:
   - cron: "0 6 * * *"
 
 jobs:
+  define-matrix:
+    runs-on: ubuntu-latest
+
+    outputs:
+      labs: ${{ steps.labs.outputs.labs }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Define Labs
+      id: labs
+      run: |
+        echo labs=$(ls labs | jq -R -s -c 'split("\n")[:-1]') >> "$GITHUB_OUTPUT"
+
   run-tests:
     runs-on: ubuntu-latest
+    needs: define-matrix
+    strategy:
+      matrix:
+        lab: ${{ fromJSON(needs.define-matrix.outputs.labs) }}
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -19,4 +39,8 @@ jobs:
       uses: cachix/install-nix-action@v17
 
     - name: Run
-      run: ./scripts/run-smoke-tests.sh
+      run: |
+        cd labs/${{ matrix.lab }}
+        ./lab.sh deploy
+        ./lab.sh smoke_test
+        ./lab.sh destroy
